@@ -8,6 +8,10 @@ import java.net.*;
 import java.util.Scanner;
 
 public class Client extends Thread {
+
+    /*Il client instanzia un socket e una stringa per la ricezione dei messaggi dal server
+    * e una per la spedizione dei messaggi al server
+    * */
     public static void main(String[] args) throws Exception {
        ComuniService comuniService =  ComuniService.getInstance();
 
@@ -20,6 +24,9 @@ public class Client extends Thread {
             Scanner input = new Scanner(System.in);
             System.out.println(replyFromServer.readUTF());
 
+            //Inizio la comunicazione con il server
+            //Il client riceve un messaggio dal server e lo stampa a schermo
+            //Il client inserisce un messaggio e lo spedisce al server
             while (true) {
                 System.out.println("a) invia un nuovo pacco");
                 System.out.println("b) muovi un pacco");
@@ -30,6 +37,7 @@ public class Client extends Thread {
 
                 String userInput = input.nextLine();
 
+                //Invia il messaggio al server secondo le possibilita sopra descritte
                 switch (userInput) {
                     case "a":
                         System.out.println("inserire il cap del centro di accettazione");
@@ -38,8 +46,13 @@ public class Client extends Thread {
                            throw new Exception("cap non trovato");
                         }
                         System.out.println("Hai selezionato il centro di " + comuniService.getCentroAccettazione(capAccettazione));
-                        System.out.println("inserire il cap in cui inviare il pacco");
-                        String capDestinazione = input.nextLine();
+                        String capDestinazione = "";
+                        do {
+                            System.out.println("inserire il cap in cui inviare il pacco (deve essere diverso dal cap di accettazione)");
+                            capDestinazione = input.nextLine();
+                        }while(!capDestinazione.matches("[0-9]{5}") && capDestinazione.equals(capAccettazione));
+                        System.out.println("Hai selezionato il centro di " + comuniService.getCentroSmistamento(capDestinazione));
+
                         if(comuniService.getCentroSmistamento(capDestinazione) == null) {
                             throw new Exception("cap non trovato");
                         }
@@ -59,12 +72,16 @@ public class Client extends Thread {
                         messageToServer.writeUTF("transito");
                         messageToServer.writeUTF("transito");
                         messageToServer.writeUTF(String.valueOf(idPacco));
-                        System.out.println("Data Read from Server: " + replyFromServer.readUTF());
-
+                        System.out.println(replyFromServer.readUTF());
                         break;
-
                     case "c":
-                        System.out.println("Write the name of the file to read: ");
+                        System.out.println("inserire il numero del pacco da cercare");
+                        idPacco = input.nextInt();
+
+                        messageToServer.writeUTF("storico");
+                        messageToServer.writeUTF("storico");
+                        messageToServer.writeUTF(String.valueOf(idPacco));
+                        System.out.println(replyFromServer.readUTF());
                         break;
                     case "d":
                         System.out.println("inserire il numero del pacco da portare a destinazione");
@@ -73,12 +90,12 @@ public class Client extends Thread {
                         messageToServer.writeUTF("destinazione_finale");
                         messageToServer.writeUTF("destinazione_finale");
                         messageToServer.writeUTF(String.valueOf(idPacco));
-                        System.out.println("Data Read from Server: " + replyFromServer.readUTF());
+                        System.out.println(replyFromServer.readUTF());
                         break;
                     case "e":
                         messageToServer.writeUTF("accettazione");
                         messageToServer.writeUTF("accettazione");
-                        System.out.println("Data Read from Server: " + replyFromServer.readUTF());
+                        System.out.println(replyFromServer.readUTF());
                         break;
                     case "x":
                         messageToServer.writeUTF(userInput.toLowerCase());

@@ -11,6 +11,9 @@ public class Server {
     public static int connectionCount = 0;
     public static ExecutorService executorService = Executors.newFixedThreadPool(10);
 
+    // porta di ascolto del server
+    //private static final int PORT = 8080;
+    //viene instanziato un oggetto di tipo ServerSocket
     public static void main(String[] args) throws Exception{
 
             Socket connectionSocket = null;
@@ -51,6 +54,11 @@ public class Server {
                         System.out.println("Active connections: " + connectionCount);
                     }
 
+                    //creo un nuovo thread per gestire la connessione
+                    //passo il socket e il dataOutputStream
+                    //il dataInputStream viene passato perchè è necessario per la ricezione dei messaggi
+                    //dalla connessione
+                    //il dataOutputStream viene passato perchè è necessario per la invio dei messaggi
                     ManageClientThread thread = new ManageClientThread(connectionSocket, dataInputStream, dataOutputStream);
                     executorService.execute(thread);
                 }

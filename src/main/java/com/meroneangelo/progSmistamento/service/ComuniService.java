@@ -12,6 +12,10 @@ public class ComuniService {
     private HashMap<String, String> centriSmistamento;
     private static ComuniService instance;
 
+    //Metodo che legge un file csv e restituisce una HashMap con i dati
+    //della prima colonna come chiave e la seconda colonna come valore
+    //delle righe non vuote
+    //Il file deve essere in formato csv con una riga di intestazione
     public static HashMap<String, String> getListFromCsv(String csvFile) {
         String line = "";
         String cvsSplitBy = ";";
@@ -30,12 +34,13 @@ public class ComuniService {
         return list;
     }
 
-
+    //Costruttore privato per implementare il singleton pattern
     private ComuniService() {
         centriAccettazione = getListFromCsv("src/main/java/resources/comuniCapAccettazione.csv");
         centriSmistamento = getListFromCsv("src/main/java/resources/comuniCapSmistamento.csv");
     }
 
+    //Metodo per ottenere l'istanza del singleton pattern (Singleton pattern) e se non esiste la crea e restituisce l'istanza creata
     public static ComuniService getInstance() {
         // Crea l'oggetto solo se NON esiste:
         if (instance == null) {

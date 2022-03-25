@@ -30,14 +30,17 @@ public class ManageClientThread implements Runnable {
 
     }
 
+    //metodo che gestisce la comunicazione con il client che si è connesso al server tramite socket e stream di comunicazione
+    //inoltre gestisce la ricezione dei pacchi dal client e nel server tramite le classi
+    //di servizio e model corrispondenti
     @Override
     public void run() {
         String input, output;
         String clientIP = this.socket.getPort() + ".txt";
-        File file = new File(clientIP);
         serverService = ServerService.getInstance();
 
-
+        //questo metodo gestisce la ricezione dei pacchi dal client
+        //controlla in continuqzione la ricezione dei pacchi dal client
         while (true) {
             try {
 
@@ -47,7 +50,6 @@ public class ManageClientThread implements Runnable {
                     this.socket.close();
                     Server.connectionCount--;
                     System.out.println("Connection closed");
-
                     System.out.println("Active connections: " + Server.connectionCount);
                     break;
                 } else {
@@ -80,7 +82,7 @@ public class ManageClientThread implements Runnable {
                             Pacco nuovoPacco = new Pacco(id, capPartenza, capArrivo, dataOra);
                             serverService.addPacco(nuovoPacco);
 
-                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n");
                         } catch (Exception e) {
                             System.out.println("Cannot write file");
                         }
@@ -100,7 +102,7 @@ public class ManageClientThread implements Runnable {
                                 response += "\n";
                             }
 
-                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n");
 
 
                         } catch (Exception e) {
@@ -122,9 +124,7 @@ public class ManageClientThread implements Runnable {
                                 response += "\n";
 
                             }
-
-                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
-
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n");
 
                         } catch (Exception e) {
                             System.out.println("errore di stream");
@@ -136,18 +136,14 @@ public class ManageClientThread implements Runnable {
                                 input = dataInputStream.readUTF();
                             } while (input.equals("storico"));
 
-
                             List<TransitoPacco> tList = serverService.getStorico(Integer.parseInt(input));
                             for (TransitoPacco t : tList) {
                                 response += ("il pacco " + t.getId() + " è stato inviato da " +
                                         comuniService.getCentroAccettazione(t.getCentroSmistamentoCorrente()) + " a " +
                                         comuniService.getCentroAccettazione(t.getCentroSmistamentoDestinazione()) + " il " + t.getDataMovimento());
                                 response += "\n";
-
                             }
-
-                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
-
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n");
 
                         } catch (Exception e) {
                             System.out.println("errore di stream");
@@ -155,26 +151,19 @@ public class ManageClientThread implements Runnable {
                     } else if (input.equals("accettazione")) {
                         String response = "";
                         try {
-
                             List<Pacco> tList = serverService.getListPacchi();
                             for (Pacco p : tList) {
                                 response += ("il pacco " + p.getId() + " è stato inviato da " +
                                         comuniService.getCentroAccettazione(p.getCentroAccettazione()) + " a " +
                                         comuniService.getCentroAccettazione(p.getDestinazione()) + " il " + p.getDataAccettazione());
                                 response += "\n";
-
                             }
-
-                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
-
-
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n");
                         } catch (Exception e) {
                             System.out.println("errore di stream");
                         }
                     }
-
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
