@@ -89,7 +89,7 @@ public class Client extends Thread {
                         messageToServer.close();
                         clientSocket.close();
                         System.out.println("Connection closed");
-                        break;;
+                        break;
                 }
             }
         } catch (Exception e) {

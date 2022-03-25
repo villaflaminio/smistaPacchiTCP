@@ -79,6 +79,6 @@ public class TransitoPacco {
 
     @Override
     public String toString() {
-        return id + ";" + sequence + ";" + centroSmistamentoCorrente + ";" + centroSmistamentoDestinazione + ";" + dataMovimento + ";" + isArrivato;
+        return id + ";" + sequence + ";" + centroSmistamentoCorrente + ";" + centroSmistamentoDestinazione + ";"+centroAccettazione + ";" + dataMovimento + ";" + isArrivato;
     }
 }

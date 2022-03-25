@@ -140,7 +140,7 @@ public class ServerService {
     public List<TransitoPacco> movePacco(int paccoId , boolean destinazioneDefinitiva) {
         TransitoPacco transitoPacco ;
         HashMap<String, String> smistamenti = comuniService.getCentriSmistamento();
-        List<TransitoPacco> sortedList = null;
+        List<TransitoPacco> sortedList = new ArrayList<>();
         Pacco pacco = null;
         for (Pacco p : listPacchi) {
             if (p.getId() == paccoId) {
