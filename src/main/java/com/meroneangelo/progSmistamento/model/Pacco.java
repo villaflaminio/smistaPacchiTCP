@@ -12,4 +12,38 @@ public class Pacco {
         this.destinazione = destinazione;
         this.dataAccettazione = dataAccettazione;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getCentroAccettazione() {
+        return centroAccettazione;
+    }
+
+    public void setCentroAccettazione(String centroAccettazione) {
+        this.centroAccettazione = centroAccettazione;
+    }
+
+    public String getDestinazione() {
+        return destinazione;
+    }
+
+    public void setDestinazione(String destinazione) {
+        this.destinazione = destinazione;
+    }
+
+    public String getDataAccettazione() {
+        return dataAccettazione;
+    }
+
+    public void setDataAccettazione(String dataAccettazione) {
+        this.dataAccettazione = dataAccettazione;
+    }
+
+
 }

@@ -1,6 +1,8 @@
 package main.java.com.meroneangelo.progSmistamento.service;
 
+import main.java.com.meroneangelo.progSmistamento.model.Pacco;
 import main.java.com.meroneangelo.progSmistamento.service.server.Server;
+import main.java.com.meroneangelo.progSmistamento.service.server.ServerService;
 
 import java.io.*;
 import java.net.Socket;
@@ -15,6 +17,7 @@ public class ManageClientThread implements Runnable {
      DataInputStream dataInputStream;
      DataOutputStream dataOutputStream;
     ComuniService comuniService =  ComuniService.getInstance();
+    ServerService serverService = ServerService.getInstance();
 
 
     public ManageClientThread(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
@@ -55,28 +58,29 @@ public class ManageClientThread implements Runnable {
                             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
                             input = dataInputStream.readUTF();
-                            System.out.println(input);
                             String[] parts = input.split(";");
                             String capPartenza = parts[0]; // 004
                             String capArrivo = parts[1]; // 034556
+                            int id;
+
+                            //verifico che non esistano già delle spedizioni con questo id
+                            do {
+                                id = (int) (Math.random() * 10000) + 1;
+
+                            } while (serverService.isIdUsed(id));
 
                             //genero un numero random da 1 a 1000
-                            int id = (int) (Math.random() * 1000) + 1;
-                            LocalDateTime date = LocalDateTime.now();
+                            LocalDateTime dateNow = LocalDateTime.now();
+                            String dataOra = formatter.format(dateNow);
+
                             String response = "il pacco " + id + " è stato inviato da " +
                                     comuniService.getCentroAccettazione(capPartenza) + " a " +
-                                    comuniService.getCentroAccettazione(capArrivo) + " il " + formatter.format(date);
+                                    comuniService.getCentroAccettazione(capArrivo) + " il " + dataOra;
 
+                            Pacco nuovoPacco = new Pacco(id, capPartenza, capArrivo, dataOra);
+                            serverService.addPacco(nuovoPacco);
 
-//                            FileWriter fileWriter = new FileWriter(file);
-//                            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-//                            PrintWriter printWriter = new PrintWriter(bufferedWriter);
-//                            printWriter.print(input);
-//
-//                            printWriter.close();
-//                            bufferedWriter.close();
-//                            fileWriter.close();
-                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress()+ "\n\n");
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
                         }
 
                         catch (Exception e) {

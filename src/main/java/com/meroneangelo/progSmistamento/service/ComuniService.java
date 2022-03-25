@@ -52,6 +52,10 @@ public class ComuniService {
     public String getCentroAccettazione(String cap) {
         return centriAccettazione.get(cap);
     }
+
+    public String getCentroSmistamento(String cap) {
+        return centriSmistamento.get(cap);
+    }
     public void setCentriAccettazione(HashMap<String, String> centriAccettazione) {
         this.centriAccettazione = centriAccettazione;
     }

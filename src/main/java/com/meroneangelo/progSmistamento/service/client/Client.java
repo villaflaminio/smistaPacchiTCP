@@ -28,10 +28,15 @@ public class Client extends Thread {
                     case "a":
                         System.out.println("inserire il cap del centro di accettazione");
                         String capAccettazione = input.nextLine();
+                        if(comuniService.getCentroAccettazione(capAccettazione) == null) {
+                           throw new Exception("cap non trovato");
+                        }
                         System.out.println("Hai selezionato il centro di " + comuniService.getCentroAccettazione(capAccettazione));
-
                         System.out.println("inserire il cap in cui inviare il pacco");
                         String capDestinazione = input.nextLine();
+                        if(comuniService.getCentroSmistamento(capDestinazione) == null) {
+                            throw new Exception("cap non trovato");
+                        }
                         System.out.println("");
 
                         String sendToServer = capAccettazione + ";" + capDestinazione;

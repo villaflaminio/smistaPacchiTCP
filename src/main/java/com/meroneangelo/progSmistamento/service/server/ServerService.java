@@ -2,6 +2,7 @@ package main.java.com.meroneangelo.progSmistamento.service.server;
 
 import main.java.com.meroneangelo.progSmistamento.model.Pacco;
 import main.java.com.meroneangelo.progSmistamento.model.TransitoPacco;
+import main.java.com.meroneangelo.progSmistamento.service.ComuniService;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,9 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerService {
+    //Singleton pattern
+    private static ServerService instance;
+    private List<Pacco> listPacchi;
+    private List<TransitoPacco> listTransitoPacchi;
 
-    public static List<Pacco> getListPacchiFromCsv(String csvFile) {
-        String csvFile = "src/main/resources/pacco.csv";
+
+    public static List<Pacco> getListPacchiFromCsv() {
+        String csvFile = "src/main/java/resources/pacchi.csv";
         String line = "";
         String cvsSplitBy = ";";
         List<Pacco> listPacco = new ArrayList<>();
@@ -32,8 +38,8 @@ public class ServerService {
         return listPacco;
     }
 
-    public static List<TransitoPacco> getListPacchiTransitoFromCsv(String csvFile) {
-        String csvFile = "src/main/resources/pacco.csv";
+    public static List<TransitoPacco> getListPacchiTransitoFromCsv() {
+        String csvFile = "src/main/java/resources/pacchiTransito.csv";
 
         String line = "";
         String cvsSplitBy = ";";
@@ -53,5 +59,47 @@ public class ServerService {
         System.out.println(listTransitoPacco);
         return listTransitoPacco;
     }
+    public static ServerService getInstance() {
+        // Crea l'oggetto solo se NON esiste:
+        if (instance == null) {
+            instance = new ServerService();
+        }
+        return instance;
+    }
+
+    private ServerService() {
+    }
+
+    public boolean isIdUsed(int id) {
+        for (TransitoPacco p : listTransitoPacchi) {
+            if (p.getId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<Pacco> getListPacchi() {
+        return listPacchi;
+    }
+
+    public void setListPacchi(List<Pacco> listPacchi) {
+        this.listPacchi = listPacchi;
+    }
+
+    public List<TransitoPacco> getListTransitoPacchi() {
+        return listTransitoPacchi;
+    }
+
+    public void addPacco(Pacco p) {
+        listPacchi.add(p);
+    }
+    public void addTransitoPacco(TransitoPacco p) {
+        listTransitoPacchi.add(p);
+    }
+    public void setListTransitoPacchi(List<TransitoPacco> listTransitoPacchi) {
+        this.listTransitoPacchi = listTransitoPacchi;
+    }
+
 
 }

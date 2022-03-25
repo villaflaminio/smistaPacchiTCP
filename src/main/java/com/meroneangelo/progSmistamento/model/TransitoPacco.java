@@ -16,4 +16,44 @@ public class TransitoPacco {
         this.dataMovimento = dataMovimento;
         this.isArrivato = isArrivato;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getCentroSmistamentoCorrente() {
+        return centroSmistamentoCorrente;
+    }
+
+    public void setCentroSmistamentoCorrente(String centroSmistamentoCorrente) {
+        this.centroSmistamentoCorrente = centroSmistamentoCorrente;
+    }
+
+    public String getCentroSmistamentoDestinazione() {
+        return centroSmistamentoDestinazione;
+    }
+
+    public void setCentroSmistamentoDestinazione(String centroSmistamentoDestinazione) {
+        this.centroSmistamentoDestinazione = centroSmistamentoDestinazione;
+    }
+
+    public String getDataMovimento() {
+        return dataMovimento;
+    }
+
+    public void setDataMovimento(String dataMovimento) {
+        this.dataMovimento = dataMovimento;
+    }
+
+    public Boolean getArrivato() {
+        return isArrivato;
+    }
+
+    public void setArrivato(Boolean arrivato) {
+        isArrivato = arrivato;
+    }
 }
