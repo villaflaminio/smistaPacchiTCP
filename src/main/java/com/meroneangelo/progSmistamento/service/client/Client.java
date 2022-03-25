@@ -22,6 +22,11 @@ public class Client extends Thread {
 
             while (true) {
                 System.out.println("a) invia un nuovo pacco");
+                System.out.println("b) muovi un pacco");
+                System.out.println("c) visualizza lo storico");
+                System.out.println("d) porta il pacco a destinazione");
+                System.out.println("e) visualizza tutti i pacchi ancora nelle stazioni di accettazione");
+                System.out.println("x) Disconnetti");
 
                 String userInput = input.nextLine();
 
@@ -47,63 +52,35 @@ public class Client extends Thread {
 
                         System.out.println(replyFromServer.readUTF());
                         break;
-                    case "x":
-                        System.out.println("lettura ");
-                        messageToServer.writeUTF(userInput.toLowerCase());
-                        messageToServer.writeUTF(userInput.toLowerCase());
-                        File file = null;
-                        String clientIP = null;
-
-                        String data = replyFromServer.readUTF();
-                        if (data.equals("No file found with such connection port name from server!")) {
-                            System.out.println(data + "\n");
-
-                            userInput = "close";
-
-                            messageToServer.writeUTF(userInput.toLowerCase());
-                            messageToServer.writeUTF(userInput.toLowerCase());
-
-                            System.out.println("Closing this connection : " + clientSocket);
-                            replyFromServer.close();
-                            messageToServer.close();
-                            clientSocket.close();
-                            System.out.println("Connection closed");
-                            break;
-                        } else {
-                            clientIP = clientSocket.getLocalPort() + "_" + clientSocket.getPort();
-                            clientIP += ".txt";
-                            file = new File(clientIP);
-                            System.out.println("Data Read from Server: " + replyFromServer.readUTF());
-                        }
-
-
-                        try {
-                            FileWriter fileWriter = new FileWriter(file);
-                            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-                            PrintWriter printWriter = new PrintWriter(bufferedWriter);
-                            printWriter.print(data);
-
-                            printWriter.close();
-                            bufferedWriter.close();
-                            fileWriter.close();
-                            System.out.println("File with name: " + clientIP + " saved on client side. \n");
-                        } catch (Exception e) {
-                            System.out.println("Cannot write file");
-                        }
-                        break;
                     case "b":
                         System.out.println("inserire il numero del pacco");
                         int idPacco = input.nextInt();
-                        System.out.println("il pacco e' stato spostato nella stazione di : " );;
 
                         messageToServer.writeUTF("transito");
                         messageToServer.writeUTF("transito");
                         messageToServer.writeUTF(String.valueOf(idPacco));
+                        System.out.println("Data Read from Server: " + replyFromServer.readUTF());
+
                         break;
-                    case "d":
+
+                    case "c":
                         System.out.println("Write the name of the file to read: ");
                         break;
+                    case "d":
+                        System.out.println("inserire il numero del pacco da portare a destinazione");
+                        idPacco = input.nextInt();
+
+                        messageToServer.writeUTF("destinazione_finale");
+                        messageToServer.writeUTF("destinazione_finale");
+                        messageToServer.writeUTF(String.valueOf(idPacco));
+                        System.out.println("Data Read from Server: " + replyFromServer.readUTF());
+                        break;
                     case "e":
+                        messageToServer.writeUTF("accettazione");
+                        messageToServer.writeUTF("accettazione");
+                        System.out.println("Data Read from Server: " + replyFromServer.readUTF());
+                        break;
+                    case "x":
                         messageToServer.writeUTF(userInput.toLowerCase());
                         messageToServer.writeUTF(userInput.toLowerCase());
 
@@ -112,10 +89,7 @@ public class Client extends Thread {
                         messageToServer.close();
                         clientSocket.close();
                         System.out.println("Connection closed");
-                        break;
-                    default:
-                        System.out.println("Write Save to save data \n Write Read to read data \n Enter close to terminate connection \n");
-                        break;
+                        break;;
                 }
             }
         } catch (Exception e) {

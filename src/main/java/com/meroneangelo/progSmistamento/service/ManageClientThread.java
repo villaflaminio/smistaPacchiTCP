@@ -1,6 +1,7 @@
 package main.java.com.meroneangelo.progSmistamento.service;
 
 import main.java.com.meroneangelo.progSmistamento.model.Pacco;
+import main.java.com.meroneangelo.progSmistamento.model.TransitoPacco;
 import main.java.com.meroneangelo.progSmistamento.service.server.Server;
 import main.java.com.meroneangelo.progSmistamento.service.server.ServerService;
 
@@ -11,13 +12,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 
 public class ManageClientThread implements Runnable {
 
-     Socket socket;
-     DataInputStream dataInputStream;
-     DataOutputStream dataOutputStream;
-    ComuniService comuniService =  ComuniService.getInstance();
+    Socket socket;
+    DataInputStream dataInputStream;
+    DataOutputStream dataOutputStream;
+    ComuniService comuniService = ComuniService.getInstance();
     ServerService serverService = ServerService.getInstance();
 
 
@@ -36,13 +38,11 @@ public class ManageClientThread implements Runnable {
         serverService = ServerService.getInstance();
 
 
-        while (true)
-        {
+        while (true) {
             try {
 
                 input = dataInputStream.readUTF();
-                if(input.toLowerCase().equals("close"))
-                {
+                if (input.toLowerCase().equals("close")) {
                     System.out.println("Closing this connection : " + this.socket);
                     this.socket.close();
                     Server.connectionCount--;
@@ -50,16 +50,13 @@ public class ManageClientThread implements Runnable {
 
                     System.out.println("Active connections: " + Server.connectionCount);
                     break;
-                }
-                else
-                {
-                    if(input.equals("invia"))
-                    {
+                } else {
+                    if (input.equals("invia")) {
                         try {
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                             do {
                                 input = dataInputStream.readUTF();
-                            }while (input.equals("invia"));
+                            } while (input.equals("invia"));
 
                             String[] parts = input.split(";");
                             String capPartenza = parts[0]; // 004
@@ -84,56 +81,98 @@ public class ManageClientThread implements Runnable {
                             serverService.addPacco(nuovoPacco);
 
                             dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
-                        }
-
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             System.out.println("Cannot write file");
                         }
-                    }
-                    else if(input.equals("transito")){
+                    } else if (input.equals("transito")) {
+                        String response = "";
                         try {
                             do {
                                 input = dataInputStream.readUTF();
-                            } while (input.equals("invia"));
+                            } while (input.equals("transito"));
 
 
-
-
-                        }catch (Exception e) {
-                            System.out.println("errore di stream");
-                        }
-                    }
-                    else if(input.toLowerCase().equals("read"))
-                    {
-                        try {
-
-                            FileReader fileReader = new FileReader(file);
-                            BufferedReader bufferedReader = new BufferedReader(fileReader);
-                            output = bufferedReader.readLine();
-                            if(output == null)
-                            {
-                                dataOutputStream.writeUTF("No Information found for client: " + this.socket.getRemoteSocketAddress());
-                                dataOutputStream.writeUTF("No Information found for client: " + this.socket.getRemoteSocketAddress());
+                            List<TransitoPacco> tList = serverService.movePacco(Integer.parseInt(input), false);
+                            for (TransitoPacco t : tList) {
+                                response += ("il pacco " + t.getId() + " è stato inviato da " +
+                                        comuniService.getCentroAccettazione(t.getCentroSmistamentoCorrente()) + " a " +
+                                        comuniService.getCentroAccettazione(t.getCentroSmistamentoDestinazione()) + " il " + t.getDataMovimento());
+                                response += "\n";
                             }
-                            else
-                            {
-                                dataOutputStream.writeUTF("Information for client: " + this.socket.getRemoteSocketAddress() + "\n" + output );
-                                dataOutputStream.writeUTF("Information for client: " + this.socket.getRemoteSocketAddress() + "\n" + output );
-                            }
+
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
 
 
                         } catch (Exception e) {
-                            System.out.println("No file found with such connection port name from server!");
-                            dataOutputStream.writeUTF("No file found with such connection port name from server!");
-                            System.out.println("Closing this connection : " + this.socket);
-                            this.socket.close();
-                            Server.connectionCount--;
-                            System.out.println("Connection closed");
+                            System.out.println("errore di stream");
+                        }
+                    } else if (input.equals("destinazione_finale")) {
+                        String response = "";
+                        try {
+                            do {
+                                input = dataInputStream.readUTF();
+                            } while (input.equals("destinazione_finale"));
 
-                            System.out.println("Active connections: " + Server.connectionCount);
-                            break;
+
+                            List<TransitoPacco> tList = serverService.movePacco(Integer.parseInt(input), true);
+                            for (TransitoPacco t : tList) {
+                                response += ("il pacco " + t.getId() + " è stato inviato da " +
+                                        comuniService.getCentroAccettazione(t.getCentroSmistamentoCorrente()) + " a " +
+                                        comuniService.getCentroAccettazione(t.getCentroSmistamentoDestinazione()) + " il " + t.getDataMovimento());
+                                response += "\n";
+
+                            }
+
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
+
+
+                        } catch (Exception e) {
+                            System.out.println("errore di stream");
+                        }
+                    } else if (input.equals("storico")) {
+                        String response = "";
+                        try {
+                            do {
+                                input = dataInputStream.readUTF();
+                            } while (input.equals("storico"));
+
+
+                            List<TransitoPacco> tList = serverService.getStorico(Integer.parseInt(input));
+                            for (TransitoPacco t : tList) {
+                                response += ("il pacco " + t.getId() + " è stato inviato da " +
+                                        comuniService.getCentroAccettazione(t.getCentroSmistamentoCorrente()) + " a " +
+                                        comuniService.getCentroAccettazione(t.getCentroSmistamentoDestinazione()) + " il " + t.getDataMovimento());
+                                response += "\n";
+
+                            }
+
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
+
+
+                        } catch (Exception e) {
+                            System.out.println("errore di stream");
+                        }
+                    } else if (input.equals("accettazione")) {
+                        String response = "";
+                        try {
+
+                            List<Pacco> tList = serverService.getListPacchi();
+                            for (Pacco p : tList) {
+                                response += ("il pacco " + p.getId() + " è stato inviato da " +
+                                        comuniService.getCentroAccettazione(p.getCentroAccettazione()) + " a " +
+                                        comuniService.getCentroAccettazione(p.getDestinazione()) + " il " + p.getDataAccettazione());
+                                response += "\n";
+
+                            }
+
+                            dataOutputStream.writeUTF(response + " " + this.socket.getRemoteSocketAddress() + "\n\n");
+
+
+                        } catch (Exception e) {
+                            System.out.println("errore di stream");
                         }
                     }
+
                 }
 
             } catch (Exception e) {
