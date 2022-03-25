@@ -2,6 +2,7 @@ package main.java.com.meroneangelo.progSmistamento.service.client;
 
 import main.java.com.meroneangelo.progSmistamento.service.ComuniService;
 
+import javax.jws.soap.SOAPBinding;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -40,14 +41,13 @@ public class Client extends Thread {
                         System.out.println("");
 
                         String sendToServer = capAccettazione + ";" + capDestinazione;
-                        ;
                         messageToServer.writeUTF("invia");
                         messageToServer.writeUTF("invia");
                         messageToServer.writeUTF(sendToServer);
 
                         System.out.println(replyFromServer.readUTF());
                         break;
-                    case "b":
+                    case "x":
                         System.out.println("lettura ");
                         messageToServer.writeUTF(userInput.toLowerCase());
                         messageToServer.writeUTF(userInput.toLowerCase());
@@ -91,8 +91,14 @@ public class Client extends Thread {
                             System.out.println("Cannot write file");
                         }
                         break;
-                    case "c":
-                        System.out.println("Write the name of the file to save: ");
+                    case "b":
+                        System.out.println("inserire il numero del pacco");
+                        int idPacco = input.nextInt();
+                        System.out.println("il pacco e' stato spostato nella stazione di : " );;
+
+                        messageToServer.writeUTF("transito");
+                        messageToServer.writeUTF("transito");
+                        messageToServer.writeUTF(String.valueOf(idPacco));
                         break;
                     case "d":
                         System.out.println("Write the name of the file to read: ");

@@ -4,17 +4,29 @@ import main.java.com.meroneangelo.progSmistamento.model.Pacco;
 import main.java.com.meroneangelo.progSmistamento.model.TransitoPacco;
 import main.java.com.meroneangelo.progSmistamento.service.ComuniService;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServerService {
     //Singleton pattern
     private static ServerService instance;
     private List<Pacco> listPacchi;
     private List<TransitoPacco> listTransitoPacchi;
+
+    private ServerService() {
+        listPacchi = getListPacchiFromCsv();
+        listTransitoPacchi = getListPacchiTransitoFromCsv();
+    }
+
+    public static ServerService getInstance() {
+        // Crea l'oggetto solo se NON esiste:
+        if (instance == null) {
+            instance = new ServerService();
+        }
+        return instance;
+    }
 
 
     public static List<Pacco> getListPacchiFromCsv() {
@@ -59,23 +71,59 @@ public class ServerService {
         System.out.println(listTransitoPacco);
         return listTransitoPacco;
     }
-    public static ServerService getInstance() {
-        // Crea l'oggetto solo se NON esiste:
-        if (instance == null) {
-            instance = new ServerService();
+
+    public static void savePacchiToCsv(List<Pacco> Pacco)  {
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter("src/main/java/resources/pacchi.csv");
+            StringBuilder line = new StringBuilder();
+            for (Pacco sample : Pacco) {
+                line.append(sample.toString());
+                line.append("\n");
+            }
+            writer.write(line.toString());
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return instance;
     }
 
-    private ServerService() {
+    public TransitoPacco movePacco(int paccoId){
+        Pacco pacco = null;
+        for (Pacco p : listPacchi) {
+            if (p.getId() == paccoId) {
+                pacco = p;
+            }
+        }
+        //se diverso da null vuoldire che il pacco e' ancora in un centro di accettazione
+        if (pacco != null) {
+            TransitoPacco transitoPacco = new TransitoPacco(pacco.getId(), );
+
+
+
+        }else {
+
+        }
+
+        return pacco;
+    }
+        for (TransitoPacco p : listTransitoPacchi) {
+            if (p.getId() == paccoId) {
+                p.setInTransito(true);
+                return p;
+            }
+        }
     }
 
     public boolean isIdUsed(int id) {
+
+        if(listTransitoPacchi != null) {
         for (TransitoPacco p : listTransitoPacchi) {
             if (p.getId() == id) {
                 return true;
             }
-        }
+        }}
         return false;
     }
 
@@ -93,6 +141,7 @@ public class ServerService {
 
     public void addPacco(Pacco p) {
         listPacchi.add(p);
+        savePacchiToCsv(listPacchi);
     }
     public void addTransitoPacco(TransitoPacco p) {
         listTransitoPacchi.add(p);

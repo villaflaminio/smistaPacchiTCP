@@ -45,5 +45,10 @@ public class Pacco {
         this.dataAccettazione = dataAccettazione;
     }
 
+    @Override
+    public String toString(){
+
+        return id + ";" + centroAccettazione + ";" + destinazione + ";" + dataAccettazione;
+    }
 
 }

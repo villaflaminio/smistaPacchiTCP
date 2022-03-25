@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class ManageClientThread implements Runnable {
@@ -32,7 +33,7 @@ public class ManageClientThread implements Runnable {
         String input, output;
         String clientIP = this.socket.getPort() + ".txt";
         File file = new File(clientIP);
-
+        serverService = ServerService.getInstance();
 
 
         while (true)
@@ -52,12 +53,14 @@ public class ManageClientThread implements Runnable {
                 }
                 else
                 {
-                    if(input.toLowerCase().equals("invia"))
+                    if(input.equals("invia"))
                     {
                         try {
-                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                            do {
+                                input = dataInputStream.readUTF();
+                            }while (input.equals("invia"));
 
-                            input = dataInputStream.readUTF();
                             String[] parts = input.split(";");
                             String capPartenza = parts[0]; // 004
                             String capArrivo = parts[1]; // 034556
@@ -70,8 +73,8 @@ public class ManageClientThread implements Runnable {
                             } while (serverService.isIdUsed(id));
 
                             //genero un numero random da 1 a 1000
-                            LocalDateTime dateNow = LocalDateTime.now();
-                            String dataOra = formatter.format(dateNow);
+                            LocalDateTime today = LocalDateTime.now();
+                            String dataOra = formatter.format(today);
 
                             String response = "il pacco " + id + " è stato inviato da " +
                                     comuniService.getCentroAccettazione(capPartenza) + " a " +
@@ -85,6 +88,19 @@ public class ManageClientThread implements Runnable {
 
                         catch (Exception e) {
                             System.out.println("Cannot write file");
+                        }
+                    }
+                    else if(input.equals("transito")){
+                        try {
+                            do {
+                                input = dataInputStream.readUTF();
+                            } while (input.equals("invia"));
+
+
+
+
+                        }catch (Exception e) {
+                            System.out.println("errore di stream");
                         }
                     }
                     else if(input.toLowerCase().equals("read"))
